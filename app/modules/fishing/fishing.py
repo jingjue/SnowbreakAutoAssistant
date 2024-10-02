@@ -35,7 +35,7 @@ class FishingModule:
                 if self.is_use_time_judge:
                     self.start_time = time.time()
                 while True:
-                    rgb_image, _, _ = auto.take_screenshot(crop=(1130 / 1920, 240 / 1080, 1500 / 1920, 570 / 1080))
+                    rgb_image, _, _ = auto.take_screenshot(crop=(1130 / 1920, 240 / 1080, 370 / 1920, 330 / 1080))
                     # 将Pillow图像转换为NumPy数组
                     img_np = np.array(rgb_image)
                     # 将图像从RGB格式转换为BGR格式（OpenCV使用BGR）
