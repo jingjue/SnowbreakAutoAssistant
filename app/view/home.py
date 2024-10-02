@@ -52,7 +52,7 @@ class StartThread(QThread):
     def run(self):
         self.is_running_signal.emit(True)
         try:
-            logger.info("请确保游戏窗口是全屏，分辨率是1920*1080，并在三秒内确保游戏窗口置顶无遮挡")
+            logger.info("请确保游戏窗口分辨率是1920*1080，并在三秒内确保游戏窗口置顶无遮挡")
             time.sleep(3)
             for key, value in self.checkbox_dic.items():
                 # print(f"value:{value}")
@@ -192,12 +192,7 @@ class Home(QFrame, Ui_home):
 
         self.TitleLabel_setting.setText("设置-" + self.setting_name_list[self.PopUpAniStackedWidget.currentIndex()])
 
-        # 获取当前日期和时间
-        now = datetime.now()
-        # 格式化成 "MM:DD" 的字符串
-        formatted_date = now.strftime("当前日期：%m月%d日")
-        # todo 根据日期生成对应活动提醒
-        self.BodyLabel_tip.setText(formatted_date)
+        self.BodyLabel_tip.setText(self.get_tip())
 
         # 查找 button1 在布局中的索引
         self.gridLayout.addWidget(self.select_person, 1, 0)
@@ -236,15 +231,13 @@ class Home(QFrame, Ui_home):
 
     def _load_config(self):
         for widget in self.findChildren(QWidget):
-            if isinstance(widget, CheckBox):
-                # 动态获取 config 对象中与 widget.objectName() 对应的属性值
-                config_item = getattr(config, widget.objectName(), None)
-                if config_item:
+            # 动态获取 config 对象中与 widget.objectName() 对应的属性值
+            config_item = getattr(config, widget.objectName(), None)
+            if config_item:
+                if isinstance(widget, CheckBox):
                     widget.setChecked(config_item.value)  # 使用配置项的值设置 CheckBox 的状态
-            elif isinstance(widget, ComboBox):
-                widget.setPlaceholderText("未选择")
-                config_item = getattr(config, widget.objectName(), None)
-                if config_item:
+                elif isinstance(widget, ComboBox):
+                    widget.setPlaceholderText("未选择")
                     widget.setCurrentIndex(config_item.value)
         self._load_item_config()
 
@@ -346,13 +339,13 @@ class Home(QFrame, Ui_home):
             logger.error(e)
 
     def save_changed(self, widget):
-        logger.debug(f"触发save_changed:{widget.objectName()}")
+        # logger.debug(f"触发save_changed:{widget.objectName()}")
         # 当与配置相关的控件状态改变时调用此函数保存配置
         if isinstance(widget, CheckBox):
             config.set(getattr(config, widget.objectName(), None), widget.isChecked())
             if widget.objectName() == 'CheckBox_is_use_power':
                 self.ComboBox_power_day.setEnabled(widget.isChecked())
-        if isinstance(widget, ComboBox):
+        elif isinstance(widget, ComboBox):
             config.set(getattr(config, widget.objectName(), None), widget.currentIndex())
 
     def save_item_changed(self, index, check_state):
@@ -362,6 +355,14 @@ class Home(QFrame, Ui_home):
     def save_item2_changed(self, index, check_state):
         # print(index, check_state)
         config.set(getattr(config, f"item_weapon_{index}", None), False if check_state == 0 else True)
+
+    def get_tip(self):
+        # 获取当前日期和时间
+        now = datetime.now()
+        # 格式化成 "MM:DD" 的字符串
+        formatted_date = now.strftime("当前日期：%m月%d日")
+
+        return formatted_date
 
     def closeEvent(self, event):
         # 恢复原始标准输出
