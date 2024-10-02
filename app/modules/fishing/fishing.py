@@ -23,6 +23,8 @@ class FishingModule:
                 start_time = time.time()
                 while True:
                     rgb_image, _, _ = auto.take_screenshot(crop=(1130 / 1920, 240 / 1080, 1500 / 1920, 570 / 1080))
+
+                    print('-----鱼上钩后OCR一次-----')
                     # 将Pillow图像转换为NumPy数组
                     img_np = np.array(rgb_image)
                     # 将图像从RGB格式转换为BGR格式（OpenCV使用BGR）
@@ -33,7 +35,8 @@ class FishingModule:
                         auto.press_key("space", wait_time=0)
                         start_time = time.time()
                     else:
-                        # 识别出未进入黄色区域，则进行时间判断、
+                        print('识别出未进入黄色区域')
+                        # 识别出未进入黄色区域，则进行时间判断
                         if time.time() - start_time > 2.2:
                             print("咋回事？强制收杆一次")
                             auto.press_key("space", wait_time=0)
@@ -64,18 +67,26 @@ class FishingModule:
         # 设定一个小范围以确保捕捉到所有的黄色像素
         # lower_yellow = np.array([yellow_hsv[0] - 2, 200, 220])
         # upper_yellow = np.array([yellow_hsv[0] + 2, 255, 255])
-        # lower_yellow = np.array([20, 255, 255])
-        # upper_yellow = np.array([23, 255, 255])
+
         lower_yellow = np.array([20, 255, 255])
-        upper_yellow = np.array([70, 255, 255])
+        upper_yellow = np.array([23, 255, 255])
+
+        # lower_yellow = np.array([0,44,46])
+        # upper_yellow = np.array([10, 255, 255])
+
         # lower_yellow = np.array([yellow_hsv[0], 255, 255])
         # upper_yellow = np.array([yellow_hsv[0], 255, 255])
 
-        # 创建黄色掩膜
+        # 创建黄色掩膜，提取颜色范围内的像素
         mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
+
+        # cv2.imshow('Mask', mask)
+        # cv2.waitKey(0)
+
 
         # 查找轮廓
         contours, _ = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        print('\n判断结果：' + str(len(contours)))
         return len(contours) >= 2
 
     def save_picture(self):

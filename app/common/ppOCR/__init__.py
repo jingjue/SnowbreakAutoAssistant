@@ -1,6 +1,6 @@
 import os
 from typing import Optional
-import cpufeature
+# import cpufeature
 import json
 
 from app.common.config import config
@@ -21,8 +21,10 @@ class OCRInstaller:
     def _cpu_support_avx2(self):
         """
         判断 CPU 是否支持 AVX2 指令集。
+        安装不了，5700x3d是支持的，所以直接返回true
         """
-        return cpufeature.CPUFeature["AVX2"]
+        # return cpufeature.CPUFeature["AVX2"]
+        return True
 
     def _determine_ocr(self):
         """
@@ -69,7 +71,7 @@ class OCRInstaller:
 # 初始化 OCR 安装器
 ocr_installer = OCRInstaller()
 # 读取 OCR 替换配置
-with open("./AppData/ocr_replacements.json", 'r', encoding='utf-8') as file:
+with open("F:/Code/SnowbreakAutoAssistant/123.json", 'r', encoding='utf-8') as file:
     replacements = json.load(file)
 # 初始化 OCR 对象
 ocr = OCR(ocr_installer.ocr_path, logger, replacements)

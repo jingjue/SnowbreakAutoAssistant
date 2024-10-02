@@ -1,6 +1,6 @@
-from PIL import Image
 import pyautogui
 import win32gui
+
 
 
 class Screenshot:
@@ -79,8 +79,17 @@ class Screenshot:
                 int(width * crop[2] * screenshot_scale_factor),
                 int(height * crop[3] * screenshot_scale_factor)
             )
-            # 预览截图
+
+            # 保存截图
             # screenshot.show()
+            # start_time = time.time()
+            # b = time.localtime(start_time)
+            # c = time.strftime("OCR截图记录 %Y-%m-%d %H时%M分%S秒", b)
+            # screenshot.save(str(c) + '.png')
+            # # print('\n./app/resource/images/fishing/logImages/' + c + '.png')
+            # print('\n记录保存截图时间')
+            # print(start_time)
+            # print(time.time() - start_time)
 
             return screenshot, screenshot_pos, screenshot_scale_factor
 

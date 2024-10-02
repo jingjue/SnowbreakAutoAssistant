@@ -437,6 +437,11 @@ class Automation(metaclass=SingletonMeta):
 
             if i < max_retries - 1:
                 time.sleep(1)  # 在重试前等待一定时间
+
+                # print('\n等待了一次')
+                # print(find_type)
+                # if(find_type == 'text'):
+                #     print(target)
         return None
 
     def click_element_with_pos(self, coordinates, offset=(0, 0), action="click", is_calculate=True):
