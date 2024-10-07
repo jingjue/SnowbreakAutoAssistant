@@ -38,29 +38,57 @@ class FishingModule:
                 auto.press_key("space", wait_time=0)
                 if self.is_use_time_judge:
                     self.start_time = time.time()
+
+                # 防止黄色区域尚未出现但截图太快，导致直接退出循环
+                time.sleep(0.125)
+                cishu = 0
+
                 while True:
+                    start_time = time.time()
+
                     rgb_image = self.take_screenshot(crop=(1130 / 1920, 240 / 1080, 370 / 1920, 330 / 1080))
                     # 将Pillow图像转换为NumPy数组
                     img_np = np.array(rgb_image)
                     # 将图像从RGB格式转换为BGR格式（OpenCV使用BGR）
                     bgr_image = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
-                    is_in = self.count_yellow_blocks(bgr_image)
-                    if is_in:
-                        print("到点，收杆!")
+                    contours = self.count_yellow_blocks(bgr_image)
+
+                    # # 玄学暂停
+                    # time.sleep(0.030)
+
+                    end_time = time.time()
+                    # 打印格式化的毫秒级差值
+                    time_difference = end_time - start_time
+                    milliseconds_difference = time_difference * 1000
+                    print(f"判断黄色区域耗时: {milliseconds_difference:.2f} 毫秒")
+
+                    if contours >= 2:
+                        print("------到点，收杆!")
                         auto.press_key("space", wait_time=0)
                         if self.is_use_time_judge:
                             self.start_time = time.time()
+                    elif contours == 0:
+                        cishu += 1
+                        if(cishu >= 3):
+                            print("----判断鱼已被钓上来----")
+                            break
                     else:
                         if self.is_use_time_judge:
                             # 识别出未进入黄色区域，则进行时间判断、
                             if time.time() - self.start_time > 2.2:
+                                cishu = 0
                                 print("咋回事？强制收杆一次")
                                 auto.press_key("space", wait_time=0)
                                 self.start_time = time.time()
-                    if not auto.find_element("app/resource/images/fishing/fishing.png", "image", threshold=0.8):
-                        # rgb_image = auto.take_screenshot()
-                        # rgb_image.save('./false.png')
-                        break
+                    # milliseconds_timestamp = int(time.time() * 1000)
+                    # print("0判断钓鱼中（毫秒级）:", milliseconds_timestamp)
+                    #
+                    # if not auto.find_element("app/resource/images/fishing/fishing.png", "image",
+                    #                          crop=(1645 / 1920, 845 / 1080, 1, 1), threshold=0.8):
+                    #     break
+                    #
+                    # milliseconds_timestamp = int(time.time() * 1000)
+                    # print("1判断钓鱼中（毫秒级）:", milliseconds_timestamp)
                 if auto.find_element("本次获得", "text", max_retries=2):
                     print("钓鱼佬永不空军！")
                     if config.CheckBox_is_save_fish.value:
@@ -92,7 +120,7 @@ class FishingModule:
 
         # contours_white, _ = cv2.findContours(mask_white, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         # print(f"白色块数为：{len(contours_white)}")
-        return len(contours_yellow) >= 2
+        return len(contours_yellow)
 
     def save_picture(self):
         current_date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
