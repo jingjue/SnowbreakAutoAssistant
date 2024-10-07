@@ -8,9 +8,13 @@ class EnterGameModule:
         self.enter_game_flag = False
 
     def run(self):
+        # if config.ComboBox_starter.value == 1:
+        #     auto.window_title = "SeasunGame.exe"
         self.check_update()
         if not self.enter_game_flag:
             self.enter_game()
+        # # 结束进入游戏操作后将窗口名改回来
+        # auto.window_title = "尘白禁区"
 
     def check_update(self):
         if auto.find_element("凭证", "text", include=True) is None:
@@ -38,7 +42,7 @@ class EnterGameModule:
             time.sleep(1)
         time.sleep(5)
         while auto.find_element("基地", "text", include=True,
-                                crop=(1516 / 1920, 664 / 1080, 1693 / 1920, 762 / 1080)) is None:
+                                crop=(1598 / 1920, 688 / 1080, 64 / 1920, 46 / 1080)) is None:
             if auto.find_element("养生专家", "text", include=True):
                 auto.click_element("app/resource/images/start_game/newbird_cancel.png", "image", threshold=0.8,
                                    scale_range=(0.6, 1))
@@ -51,7 +55,7 @@ class EnterGameModule:
         if auto.click_element("活动", "text", include=False, max_retries=3):
             auto.press_key("esc", wait_time=0.5)
         while not auto.find_element("基地", "text", include=True,
-                                    crop=(1516 / 1920, 664 / 1080, 1693 / 1920, 762 / 1080)):
+                                    crop=(1598 / 1920, 688 / 1080, 64 / 1920, 46 / 1080)):
             if auto.find_element("app/resource/images/start_game/newbird_cancel.png", "image", threshold=0.8,
                                  max_retries=3, scale_range=(0.6, 1)):
                 auto.click_element("app/resource/images/start_game/newbird_cancel.png", "image", threshold=0.8,

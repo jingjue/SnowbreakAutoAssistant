@@ -45,7 +45,7 @@ class Automation(metaclass=SingletonMeta):
     def take_screenshot(self, crop=(0, 0, 1, 1)):
         """
         捕获游戏窗口的截图。
-        :param crop: 截图的裁剪区域，格式为(x1, y1, x2, y2)，默认为全屏。
+        :param crop: 截图的裁剪区域，格式为(x1, y1, width, height)，默认为全屏。
         :return: 成功时返回截图及其位置和缩放因子，失败时抛出异常。
         """
         start_time = time.time()
@@ -459,8 +459,8 @@ class Automation(metaclass=SingletonMeta):
         if is_calculate:
             x, y = self.calculate_click_position(coordinates, offset)
         else:
-            x = coordinates[0]+offset[0]
-            y = coordinates[1]+offset[1]
+            x = coordinates[0] + offset[0]
+            y = coordinates[1] + offset[1]
         # 动作到方法的映射
         action_map = {
             "click": self.mouse_click,
@@ -533,3 +533,11 @@ class Automation(metaclass=SingletonMeta):
             if ocr_result:
                 return ocr_result
         return None
+
+    def back_to_home(self):
+        while not self.find_element("基地", "text", include=True,
+                                    crop=(1598 / 1920, 688 / 1080, 64 / 1920, 46 / 1080)):
+            if self.click_element("app/resource/images/reward/home.png", "image", threshold=0.7):
+                time.sleep(1)
+            else:
+                self.press_key("esc")
